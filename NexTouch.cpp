@@ -52,6 +52,7 @@ void NexTouch::push(void)
 {
     if (__cb_push)
     {
+      dbSerialPrintln("call attached push function");
         __cb_push(__cbpush_ptr);
     }
 }
@@ -60,6 +61,7 @@ void NexTouch::pop(void)
 {
     if (__cb_pop)
     {
+      dbSerialPrintln("call attached pop function");
         __cb_pop(__cbpop_ptr);
     }
 }
@@ -78,13 +80,16 @@ void NexTouch::iterate(NexTouch **list, uint8_t pid, uint8_t cid, int32_t event)
     {
         if (e->getObjPid() == pid && e->getObjCid() == cid)
         {
+            dbSerialPrint(event);
             e->printObjInfo();
             if (NEX_EVENT_PUSH == event)
             {
+                dbSerialPrintln("push");
                 e->push();
             }
             else if (NEX_EVENT_POP == event)
             {
+                dbSerialPrintln("pop");
                 e->pop();
             }
             

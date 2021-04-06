@@ -187,14 +187,21 @@ void sendCommand(const char* cmd)
 bool recvRetCommandFinished(uint32_t timeout)
 {    
     bool ret = false;
-    uint8_t temp[4] = {0};
+    uint8_t temp[20] = {0};
     
     nexSerial.setTimeout(timeout);
-    if (sizeof(temp) != nexSerial.readBytes((char *)temp, sizeof(temp)))
+    const size_t bytes_read = nexSerial.readBytes((char *)temp, sizeof(temp));
+    const size_t expected_bytes_read = 4;
+    if (expected_bytes_read != bytes_read)
     {
+        dbSerialPrint("wrong size ");
+        dbSerialPrintln(bytes_read);
+
         ret = false;
     }
 
+    // TODO(lucasw) I'm seeing the same command mirrored back the three 0xFFs after
+    // (which the sendCommand function adds.  Maybe wires are touching?
     if (temp[0] == NEX_RET_CMD_FINISHED
         && temp[1] == 0xFF
         && temp[2] == 0xFF
@@ -204,13 +211,19 @@ bool recvRetCommandFinished(uint32_t timeout)
         ret = true;
     }
 
+    dbSerialPrint((char*)temp);
+    for (size_t i = 0; i < sizeof(temp) && temp[i] != 0; ++i) {
+      dbSerialPrint(" 0x");
+      dbSerialPrintHex(temp[i]);
+    }
+
     if (ret) 
     {
-        dbSerialPrintln("recvRetCommandFinished ok");
+        dbSerialPrintln(" recvRetCommandFinished ok");
     }
     else
     {
-        dbSerialPrintln("recvRetCommandFinished err");
+        dbSerialPrintln(" recvRetCommandFinished err");
     }
     
     return ret;
@@ -221,14 +234,28 @@ bool nexInit(void)
 {
     bool ret1 = false;
     bool ret2 = false;
-    
-    dbSerialBegin(9600);
+
+    // TODO(lucasw) the user has to set this up
+    // dbSerialBegin(115200);
     nexSerial.begin(9600);
     sendCommand("");
+    // Flush anything from serial port
+    nexSerial.setTimeout(500);
+    uint8_t temp[32] = {0};
+    const size_t bytes_read = nexSerial.readBytes((char *)temp, sizeof(temp));
+    dbSerialPrint(bytes_read);
+    dbSerialPrintln(" rx bytes cleared");
+
     sendCommand("bkcmd=1");
     ret1 = recvRetCommandFinished();
+    if (!ret1) {
+      dbSerialPrintln("bkcmd=1 failed");
+    }
     sendCommand("page 0");
     ret2 = recvRetCommandFinished();
+    if (!ret2) {
+      dbSerialPrintln("page 0 failed");
+    }
     return ret1 && ret2;
 }
 

@@ -38,7 +38,10 @@
 
 
 #ifdef DEBUG_SERIAL_ENABLE
+// #define dbSerialPrint(...)    dbSerial.print(__VA_ARGS__)
+// #define dbSerialPrintln(...)  dbSerial.println(__VA_ARGS__)
 #define dbSerialPrint(a)    dbSerial.print(a)
+#define dbSerialPrintHex(a)    dbSerial.print(a, HEX)
 #define dbSerialPrintln(a)  dbSerial.println(a)
 #define dbSerialBegin(a)    dbSerial.begin(a)
 #else
