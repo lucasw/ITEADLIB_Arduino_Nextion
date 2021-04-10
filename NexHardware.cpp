@@ -187,7 +187,7 @@ void sendCommand(const char* cmd)
 bool recvRetCommandFinished(uint32_t timeout)
 {    
     bool ret = false;
-    uint8_t temp[20] = {0};
+    uint8_t temp[100] = {0};
     
     nexSerial.setTimeout(timeout);
     const size_t bytes_read = nexSerial.readBytes((char *)temp, sizeof(temp));
@@ -211,19 +211,20 @@ bool recvRetCommandFinished(uint32_t timeout)
         ret = true;
     }
 
-    dbSerialPrint((char*)temp);
+    dbSerialPrintln((char*)temp);
     for (size_t i = 0; i < sizeof(temp) && temp[i] != 0; ++i) {
       dbSerialPrint(" 0x");
       dbSerialPrintHex(temp[i]);
     }
+    dbSerialPrintln();
 
     if (ret) 
     {
-        dbSerialPrintln(" recvRetCommandFinished ok");
+        dbSerialPrintln("recvRetCommandFinished ok");
     }
     else
     {
-        dbSerialPrintln(" recvRetCommandFinished err");
+        dbSerialPrintln("recvRetCommandFinished err");
     }
     
     return ret;
