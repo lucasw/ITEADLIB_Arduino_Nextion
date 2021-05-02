@@ -85,18 +85,24 @@ void NexTouch::iterate(NexTouch **list, uint8_t pid, uint8_t cid, int32_t event)
             e->printObjInfo();
             if (NEX_EVENT_PUSH == event)
             {
-                dbSerialPrintln("push");
+                dbSerialPrint(event);
+                dbSerialPrintln(" push");
                 e->push();
             }
             else if (NEX_EVENT_POP == event)
             {
-                dbSerialPrintln("pop");
+                dbSerialPrint(event);
+                dbSerialPrintln(" pop");
                 e->pop();
             }
             return;
         }
     }
     dbSerialPrint("unused event: ");
-    e->printObjInfo();
+    dbSerialPrint(event);
+    dbSerialPrint(", pid ");
+    dbSerialPrint(pid);
+    dbSerialPrint(", cid ");
+    dbSerialPrintln(cid);
 }
 
