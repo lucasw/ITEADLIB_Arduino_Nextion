@@ -238,7 +238,7 @@ bool nexInit(void)
 
     // TODO(lucasw) the user has to set this up
     // dbSerialBegin(115200);
-    nexSerial.begin(9600);
+    // nexSerial.begin(9600);
     sendCommand("");
     // Flush anything from serial port
     nexSerial.setTimeout(500);
